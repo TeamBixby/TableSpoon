@@ -15,6 +15,7 @@ use pocketmine\nbt\tag\ListTag;
 use pocketmine\network\mcpe\protocol\LevelEventPacket;
 use pocketmine\network\mcpe\protocol\MobArmorEquipmentPacket;
 use pocketmine\network\mcpe\protocol\MobEquipmentPacket;
+use pocketmine\network\mcpe\protocol\types\inventory\ItemStackWrapper;
 use pocketmine\Player;
 use Xenophilicy\TableSpoon\utils\ArmorTypes;
 
@@ -278,7 +279,7 @@ class ArmorStand extends Entity {
         $pk = new MobEquipmentPacket();
         $pk->entityRuntimeId = $this->getId();
         $pk->inventorySlot = $pk->hotbarSlot = 1;
-        $pk->item = $this->getItemOffHand();
+        $pk->item = ItemStackWrapper::legacy($this->getItemOffHand());
         $player->dataPacket($pk);
     }
     
@@ -288,10 +289,10 @@ class ArmorStand extends Entity {
     public function sendArmorItems(Player $player){
         $pk = new MobArmorEquipmentPacket();
         $pk->entityRuntimeId = $this->getId();
-        $pk->head = $this->getHelmet();
-        $pk->chest = $this->getChestplate();
-        $pk->legs = $this->getLeggings();
-        $pk->feet = $this->getBoots();
+        $pk->head = ItemStackWrapper::legacy($this->getHelmet());
+        $pk->chest = ItemStackWrapper::legacy($this->getChestplate());
+        $pk->legs = ItemStackWrapper::legacy($this->getLeggings());
+        $pk->feet = ItemStackWrapper::legacy($this->getBoots());
         $player->dataPacket($pk);
     }
     
