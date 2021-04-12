@@ -4,7 +4,10 @@ declare(strict_types=1);
 namespace Xenophilicy\TableSpoon\handlers;
 
 use pocketmine\event\{Listener, server\DataPacketReceiveEvent, server\DataPacketSendEvent};
-use pocketmine\network\mcpe\protocol\{PlayerActionPacket, StartGamePacket, types\SpawnSettings};
+use pocketmine\network\mcpe\protocol\{PlayerActionPacket,
+	StartGamePacket,
+	types\inventory\UseItemOnEntityTransactionData,
+	types\SpawnSettings};
 use pocketmine\Player as PMPlayer;
 use pocketmine\plugin\Plugin;
 use Xenophilicy\TableSpoon\network\InventoryTransactionPacket;
@@ -68,12 +71,12 @@ class PacketHandler implements Listener {
                 }
                 break;
             case ($pk instanceof InventoryTransactionPacket):
-                if($pk->transactionType === InventoryTransactionPacket::TYPE_USE_ITEM_ON_ENTITY){
-                    if($pk->trData->actionType === InventoryTransactionPacket::USE_ITEM_ON_ENTITY_ACTION_INTERACT){
-                        $entity = $p->getLevel()->getEntity($pk->trData->entityRuntimeId);
+                if($pk->trData instanceof UseItemOnEntityTransactionData){
+                    if($pk->trData->getActionType() === UseItemOnEntityTransactionData::ACTION_INTERACT){
+                        $entity = $p->getLevel()->getEntity($pk->trData->getEntityRuntimeId());
                         $item = $p->getInventory()->getItemInHand();
-                        $slot = $pk->trData->hotbarSlot;
-                        $clickPos = $pk->trData->clickPos;
+                        $slot = $pk->trData->getHotbarSlot();
+                        $clickPos = $pk->trData->getClickPos();
                         if(method_exists($entity, "onInteract")){
                             //                  Player Item  Int   Vector3
                             $entity->onInteract($p, $item, $slot, $clickPos);

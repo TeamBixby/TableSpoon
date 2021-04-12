@@ -40,18 +40,16 @@ class NetworkInventoryAction extends PMNetworkInventoryAction {
         $newAction->inventorySlot = $action->inventorySlot;
         $newAction->oldItem = clone $action->oldItem;
         $newAction->newItem = clone $action->newItem;
-        $newAction->newItemStackId = $action->newItemStackId;
         return $newAction;
     }
     
     /**
      * @param NetworkBinaryStream $packet
-     * @param bool $hasItemStackIds
      * @return $this|NetworkInventoryAction
      */
-    public function read(NetworkBinaryStream $packet, bool $hasItemStackIds){
+    public function read(NetworkBinaryStream $packet){
         try{
-            parent::read($packet, $hasItemStackIds);
+            parent::read($packet);
         }catch(UnexpectedValueException $exception){
             if($this->sourceType === self::SOURCE_CRAFTING_GRID){
                 $this->windowId = $packet->getVarInt();
@@ -77,7 +75,7 @@ class NetworkInventoryAction extends PMNetworkInventoryAction {
                     case self::SOURCE_TYPE_CRAFTING_ADD_INGREDIENT:
                     case self::SOURCE_TYPE_CRAFTING_REMOVE_INGREDIENT:
                     case self::SOURCE_TYPE_CONTAINER_DROP_CONTENTS:
-                        return new SlotChangeAction($player->getCraftingGrid(), $this->inventorySlot, $this->oldItem, $this->newItem);
+                        return new SlotChangeAction($player->getCraftingGrid(), $this->inventorySlot, $this->oldItem->getItemStack(), $this->newItem->getItemStack());
                     case self::SOURCE_TYPE_CRAFTING_RESULT:
                     case self::SOURCE_TYPE_CRAFTING_USE_INGREDIENT:
                         return null;
@@ -93,18 +91,18 @@ class NetworkInventoryAction extends PMNetworkInventoryAction {
                             case self::SOURCE_TYPE_ENCHANT_INPUT:
                                 $this->inventorySlot = 0;
                                 $local = $inv->getItem(0);
-                                if($local->equals($this->newItem, true, false)){
-                                    $inv->setItem(0, $this->newItem);
+                                if($local->equals($this->newItem->getItemStack(), true, false)){
+                                    $inv->setItem(0, $this->newItem->getItemStack());
                                 }
                                 break;
                             case self::SOURCE_TYPE_ENCHANT_MATERIAL:
                                 $this->inventorySlot = 1;
-                                $inv->setItem(1, $this->oldItem);
+                                $inv->setItem(1, $this->oldItem->getItemStack());
                                 break;
                             case self::SOURCE_TYPE_ENCHANT_OUTPUT:
                                 break;
                         }
-                        return new SlotChangeAction($inv, $this->inventorySlot, $this->oldItem, $this->newItem);
+                        return new SlotChangeAction($inv, $this->inventorySlot, $this->oldItem->getItemStack(), $this->newItem->getItemStack());
                     case self::SOURCE_TYPE_BEACON:
                         $inv = $player->getWindow(WindowIds::BEACON);
                         if(!($inv instanceof EnchantInventory)){
@@ -112,7 +110,7 @@ class NetworkInventoryAction extends PMNetworkInventoryAction {
                             return null;
                         }
                         $this->inventorySlot = 0;
-                        return new SlotChangeAction($inv, $this->inventorySlot, $this->oldItem, $this->newItem);
+                        return new SlotChangeAction($inv, $this->inventorySlot, $this->oldItem->getItemStack(), $this->newItem->getItemStack());
                     case self::SOURCE_TYPE_ANVIL_INPUT:
                     case self::SOURCE_TYPE_ANVIL_MATERIAL:
                     case self::SOURCE_TYPE_ANVIL_RESULT:
@@ -144,12 +142,12 @@ class NetworkInventoryAction extends PMNetworkInventoryAction {
                                     $material->count -= 1;
                                     $inv->setItem(1, $material);
                                 }
-                                $inv->setItem(2, $this->oldItem, false);
+                                $inv->setItem(2, $this->oldItem->getItemStack(), false);
                                 if($player->isSurvival()){
                                     $player->subtractXpLevels($cost);
                                 }
                         }
-                        return new SlotChangeAction($inv, $this->inventorySlot, $this->oldItem, $this->newItem);
+                        return new SlotChangeAction($inv, $this->inventorySlot, $this->oldItem->getItemStack(), $this->newItem->getItemStack());
                 }
             }else{
                 throw $exception;

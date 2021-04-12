@@ -37,12 +37,16 @@ class CraftingDataPacket extends PMCraftingDataPacket {
                     /** @var Item */
                     $entry["input"] = [];
                     for($j = 0; $j < $ingredientCount; ++$j){
-                        $entry["input"][] = $this->getSlot();
+                        $entry["input"][] = $this->getItemStack(function() : void{
+                        	// NOOP
+						});
                     }
                     $resultCount = $this->getUnsignedVarInt();
                     $entry["output"] = [];
                     for($k = 0; $k < $resultCount; ++$k){
-                        $entry["output"][] = $this->getSlot();
+                        $entry["output"][] = $this->getItemStack(function() : void{
+							// NOOP
+						});
                     }
                     $entry["uuid"] = $this->getUUID()->toString();
                     break;
@@ -52,12 +56,16 @@ class CraftingDataPacket extends PMCraftingDataPacket {
                     $count = $entry["width"] * $entry["height"];
                     $entry["input"] = [];
                     for($j = 0; $j < $count; ++$j){
-                        $entry["input"][] = $this->getSlot();
+                        $entry["input"][] = $this->getItemStack(function() : void{
+							// NOOP
+						});
                     }
                     $resultCount = $this->getUnsignedVarInt();
                     $entry["output"] = [];
                     for($k = 0; $k < $resultCount; ++$k){
-                        $entry["output"][] = $this->getSlot();
+                        $entry["output"][] = $this->getItemStack(function() : void{
+							// NOOP
+						});
                     }
                     $entry["uuid"] = $this->getUUID()->toString();
                     break;
@@ -67,7 +75,9 @@ class CraftingDataPacket extends PMCraftingDataPacket {
                     if($recipeType === self::ENTRY_FURNACE_DATA){
                         $entry["inputDamage"] = $this->getVarInt();
                     }
-                    $entry["output"] = $this->getSlot();
+                    $entry["output"] = $this->getItemStack(function() : void{
+						// NOOP
+					});
                     break;
                 case self::ENTRY_ENCHANT_LIST:
                     $entry["uuid"] = $this->getUUID()->toString();
@@ -137,12 +147,12 @@ class CraftingDataPacket extends PMCraftingDataPacket {
     private static function writeShapelessRecipe(ShapelessRecipe $recipe, NetworkBinaryStream $stream){
         $stream->putUnsignedVarInt($recipe->getIngredientCount());
         foreach($recipe->getIngredientList() as $item){
-            $stream->putSlot($item);
+            $stream->putItemStackWithoutStackId($item);
         }
         $results = $recipe->getResults();
         $stream->putUnsignedVarInt(count($results));
         foreach($results as $item){
-            $stream->putSlot($item);
+            $stream->putItemStackWithoutStackId($item);
         }
         $stream->put(str_repeat("\x00", 16)); //Null UUID
         return CraftingDataPacket::ENTRY_SHAPELESS;
@@ -158,13 +168,13 @@ class CraftingDataPacket extends PMCraftingDataPacket {
         $stream->putVarInt($recipe->getHeight());
         for($z = 0; $z < $recipe->getHeight(); ++$z){
             for($x = 0; $x < $recipe->getWidth(); ++$x){
-                $stream->putSlot($recipe->getIngredient($x, $z));
+                $stream->putItemStackWithoutStackId($recipe->getIngredient($x, $z));
             }
         }
         $results = $recipe->getResults();
         $stream->putUnsignedVarInt(count($results));
         foreach($results as $item){
-            $stream->putSlot($item);
+            $stream->putItemStackWithoutStackId($item);
         }
         $stream->put(str_repeat("\x00", 16)); //Null UUID
         return CraftingDataPacket::ENTRY_SHAPED;
@@ -179,11 +189,11 @@ class CraftingDataPacket extends PMCraftingDataPacket {
         if(!$recipe->getInput()->hasAnyDamageValue()){ //Data recipe
             $stream->putVarInt($recipe->getInput()->getId());
             $stream->putVarInt($recipe->getInput()->getDamage());
-            $stream->putSlot($recipe->getResult());
+            $stream->putItemStackWithoutStackId($recipe->getResult());
             return CraftingDataPacket::ENTRY_FURNACE_DATA;
         }else{
             $stream->putVarInt($recipe->getInput()->getId());
-            $stream->putSlot($recipe->getResult());
+            $stream->putItemStackWithoutStackId($recipe->getResult());
             return CraftingDataPacket::ENTRY_FURNACE;
         }
     }
