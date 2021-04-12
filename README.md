@@ -1,10 +1,7 @@
 # Tablespoon
-Dead fork (meaning I no longer update it) of [TeaSpoon](https://github.com/CortexPE/TeaSpoon)
+Fork of [TeaSpoon](https://github.com/CortexPE/TeaSpoon)
 
-[![Patreon](https://img.shields.io/badge/patreon-donate-green.svg)](http://patreon.com/xenophilicy)
-[![HitCount](http://hits.dwyl.com/XenoServers/TableSpoon.svg)](http://hits.dwyl.com/XenoServers/TableSpoon)
-[![License](https://img.shields.io/badge/license-AGPL%20v3-blue.svg?style=flat-square)](https://github.com/XenoServers/TableSpoon/blob/master/LICENSE)
-[![Discord](https://img.shields.io/discord/490677165289897995.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.xenoservers.net)
+[![Discord](https://img.shields.io/discord/773833936942006283.svg?style=flat-square&label=discord&colorB=7289da)](https://discord.xenoservers.net)
 
 ***
 **PLEASE NOTE: We do NOT provide any support for branches, forks, or unofficial versions of TableSpoon nor do we support any unofficial or beta releases of PocketMine. We are NOT responsible for any damages or corruptions that may occur by using this plugin. You assume ALL responsibility and accept the risks by using this plugin.**
