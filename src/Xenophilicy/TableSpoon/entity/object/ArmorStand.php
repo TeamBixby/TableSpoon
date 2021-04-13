@@ -273,7 +273,7 @@ class ArmorStand extends Entity {
         $pk = new MobEquipmentPacket();
         $pk->entityRuntimeId = $this->getId();
         $pk->inventorySlot = $pk->hotbarSlot = 0;
-        $pk->item = $this->getItemInHand();
+        $pk->item = ItemStackWrapper::legacy($this->getItemInHand());
         $player->dataPacket($pk);
         
         $pk = new MobEquipmentPacket();
